@@ -1,10 +1,13 @@
-import { React, useContext, useEffect, useState } from "react";
+import { React, useContext, useEffect, useState, useRef } from "react";
 import logo from "../img/LOGO.png";
 import { InvoiceContex } from "../../contex/InvoiceContex";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export const Invoice = () => {
   const { InvoiceNumber, refresh } = useContext(InvoiceContex);
+  const invoiceRef = useRef();
 
   const [invoice, setInvoice] = useState({});
   const [customerDetails, setCustomerDetails] = useState();
@@ -66,8 +69,20 @@ export const Invoice = () => {
     console.log(items);
   }, [items]);
 
+  const handdleDownload = () => {
+    const input = invoiceRef.current;
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "px", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("invoice.pdf"); // Download the PDF
+    });
+  };
+
   return (
-    <div className="invoice-container m-4">
+    <div ref={invoiceRef} className="invoice-container m-4">
       <div className="header">
         <div className="logo">
           <img src={logo} alt="logo"></img>
@@ -140,6 +155,16 @@ export const Invoice = () => {
       <div className="d-flex gap-3 width justify-content-end pe-5 pt-4 totalSection">
         <span className="title">Total</span>
         <span className="value">LKR {total}</span>
+      </div>
+      <div className="mt-5 d-flex flex-column tac">
+        <span className="title">TERMS & CONDITIONS</span>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handdleDownload}
+        >
+          Download
+        </button>
       </div>
     </div>
   );

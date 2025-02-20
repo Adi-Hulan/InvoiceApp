@@ -81,6 +81,12 @@ body {
   font-weight: 500;
 }
 
+.invoice-container .tac .title {
+  color: #000;
+  font-weight: 400;
+  font-size: 20px;
+}
+
 /*1111111111111111111111111111111111111111*/
 /*--------------------------------------------------------------
 >> TABLE OF CONTENTS:
